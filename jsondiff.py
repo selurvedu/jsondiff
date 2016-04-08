@@ -28,9 +28,11 @@ __all__ = ["make",]
 
 if sys.version_info[0] >= 3:
     _range = range
+    _str = str
     _viewkeys = dict.keys
 else:
     _range = xrange
+    _str = unicode
     if sys.version_info[1] >= 7:
         _viewkeys = dict.viewkeys
     else:
@@ -118,7 +120,7 @@ class _op_base(object):
         self.value = value
 
     def __repr__(self):
-        return str(self.get())
+        return _str(self.get())
 
 class _op_add(_op_base):
     def _on_undo_remove(self, path, key):
@@ -207,11 +209,11 @@ class _op_move(object):
         return {'op': 'move', 'path': _path_join(self.path, self.key), 'from': _path_join(self.oldpath, self.oldkey)}
 
     def __repr__(self):
-        return str(self.get())
+        return _str(self.get())
 
 def _path_join(path, key):
     if key != None:
-        return path + '/' + str(key).replace('~', '~0').replace('/', '~1')
+        return path + '/' + _str(key).replace('~', '~0').replace('/', '~1')
     return path
 
 def _item_added(path, key, info, item):
@@ -257,9 +259,9 @@ def _compare_dicts(path, info, src, dst):
     added_keys = dst_keys - src_keys
     removed_keys = src_keys - dst_keys
     for key in removed_keys:
-        _item_removed(path, str(key), info, src[key])
+        _item_removed(path, _str(key), info, src[key])
     for key in added_keys:
-        _item_added(path, str(key), info, dst[key])
+        _item_added(path, _str(key), info, dst[key])
     for key in src_keys & dst_keys:
         _compare_values(path, key, info, src[key], dst[key])
 
